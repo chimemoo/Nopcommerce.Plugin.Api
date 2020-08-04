@@ -1,0 +1,14 @@
+D:\dev\mujuweb\src\Presentation\Nop.Web\Plugins\Nop.Plugin.Api\Areas\Admin\Views\ApiAdmin\Settings.cshtml
+D:\dev\mujuweb\src\Presentation\Nop.Web\Plugins\Nop.Plugin.Api\Areas\Admin\Views\_ViewImports.cshtml
+D:\dev\mujuweb\src\Presentation\Nop.Web\Plugins\Nop.Plugin.Api\logo.jpg
+D:\dev\mujuweb\src\Presentation\Nop.Web\Plugins\Nop.Plugin.Api\plugin.json
+D:\dev\mujuweb\src\Presentation\Nop.Web\Plugins\Nop.Plugin.Api\Nop.Plugin.Api.deps.json
+D:\dev\mujuweb\src\Presentation\Nop.Web\Plugins\Nop.Plugin.Api\Nop.Plugin.Api.dll
+D:\dev\mujuweb\src\Presentation\Nop.Web\Plugins\Nop.Plugin.Api\Nop.Plugin.Api.pdb
+D:\dev\mujuweb\src\Plugins\Nop.Plugin.Api\obj\Debug\netcoreapp2.2\Nop.Plugin.Api.csprojAssemblyReference.cache
+D:\dev\mujuweb\src\Plugins\Nop.Plugin.Api\obj\Debug\netcoreapp2.2\Nop.Plugin.Api.AssemblyInfoInputs.cache
+D:\dev\mujuweb\src\Plugins\Nop.Plugin.Api\obj\Debug\netcoreapp2.2\Nop.Plugin.Api.AssemblyInfo.cs
+D:\dev\mujuweb\src\Plugins\Nop.Plugin.Api\obj\Debug\netcoreapp2.2\Nop.Plugin.Api.csproj.CoreCompileInputs.cache
+D:\dev\mujuweb\src\Plugins\Nop.Plugin.Api\obj\Debug\netcoreapp2.2\Nop.Plugin.Api.csproj.CopyComplete
+D:\dev\mujuweb\src\Plugins\Nop.Plugin.Api\obj\Debug\netcoreapp2.2\Nop.Plugin.Api.dll
+D:\dev\mujuweb\src\Plugins\Nop.Plugin.Api\obj\Debug\netcoreapp2.2\Nop.Plugin.Api.pdb
