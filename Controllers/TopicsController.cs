@@ -24,12 +24,25 @@ using Nop.Core;
 using Nop.Core.Caching;
 using Nop.Core.Configuration;
 using Nop.Core.Domain;
+using Nop.Services.Common;
+using Nop.Core.Domain.Customers;
+using Nop.Core.Domain.Media;
+using Nop.Core.Domain.Common;
+using Nop.Services.Directory;
+using Nop.Core.Domain.Directory;
+using Nop.Core.Data;
+using System;
+using Nop.Services.Authentication.External;
+using Nop.Services.Messages;
+using Nop.Core.Infrastructure;
+using Nop.Plugin.Api.Models.Authentication;
 
 namespace Nop.Plugin.Api.Controllers
 {
     public class TopicsController : ApiByPassController
     {
         private readonly ITopicApiService _topicApiService;
+        private readonly IProvinceApiService _provinceApiService;
         private readonly ITopicService _topicService;
         private readonly IDTOHelper _dtoHelper;
         private readonly IStoreContext _storeContext;
@@ -37,9 +50,17 @@ namespace Nop.Plugin.Api.Controllers
         private readonly IStaticCacheManager _cacheManager;
         private readonly StoreInformationSettings _storeInformationSettings;
         private readonly IPictureService _pictureService;
+        private readonly IGenericAttributeService _genericAttributeService;
+        private readonly IWorkContext _workContext;
+        private readonly MediaSettings _mediaSettings;
+        private readonly IStateProvinceService _stateProvinceService;
+        private readonly IRepository<StateProvince> _stateProvinceRepository;
+        private readonly ICountryService _countryService;
+        private ICollection<StateProvince> _stateProvinces;
 
         public TopicsController(
             ITopicApiService topicApiService,
+            //IProvinceApiService provinceApiService,
             IJsonFieldsSerializer jsonFieldsSerializer,
             ITopicService categoryService,
             IUrlRecordService urlRecordService,
@@ -53,11 +74,18 @@ namespace Nop.Plugin.Api.Controllers
             IStaticCacheManager cacheManager,
             ICustomerService customerService,
             IDTOHelper dtoHelper,
+            IGenericAttributeService genericAttributeService,
             IStoreContext storeContext,
+            IWorkContext workContext,
+            IStateProvinceService stateProvinceService,
+            ICountryService countryService,
+            IRepository<StateProvince> stateProvinceRepository,
+            MediaSettings mediaSettings,
             StoreInformationSettings storeInformationSettings) : base(jsonFieldsSerializer, aclService, customerService, storeMappingService, storeService, discountService,
                                          customerActivityService, localizationService, pictureService)
         {
             _topicApiService = topicApiService;
+            //_provinceApiService = provinceApiService;
             _topicService = categoryService;
             _urlRecordService = urlRecordService;
             _dtoHelper = dtoHelper;
@@ -65,6 +93,12 @@ namespace Nop.Plugin.Api.Controllers
             _cacheManager = cacheManager;
             _storeInformationSettings = storeInformationSettings;
             _pictureService = pictureService;
+            _genericAttributeService = genericAttributeService;
+            _workContext = workContext;
+            _mediaSettings = mediaSettings;
+            _stateProvinceService = stateProvinceService;
+            _stateProvinceRepository = stateProvinceRepository;
+            _countryService = countryService;
         }
 
         /// <summary>
@@ -107,14 +141,6 @@ namespace Nop.Plugin.Api.Controllers
             return new RawJsonActionResult(json);
         }
 
-        /// <summary>
-        ///     Retrieve product by spcified id
-        /// </summary>
-        /// <param name="id">Id of the product</param>
-        /// <param name="fields">Fields from the topic you want your json to contain</param>
-        /// <response code="200">OK</response>
-        /// <response code="404">Not Found</response>
-        /// <response code="401">Unauthorized</response>
         [HttpGet]
         [Route("/api/topics/{id}")]
         [ProducesResponseType(typeof(TopicsRootObject), (int)HttpStatusCode.OK)]
@@ -161,9 +187,81 @@ namespace Nop.Plugin.Api.Controllers
                 StoreName = LocalizationService.GetLocalized(_storeContext.CurrentStore, x => x.Name),
                 LogoPath = _pictureService.GetPictureUrl(logoPictureId, showDefaultPicture: false)
             };
-            
+
             return Ok(model);
         }
 
+        // get avatar
+        [HttpGet]
+        [Route("/api/avatar/{id}")]
+        [ProducesResponseType(typeof(CustomerAvatarModel), (int)HttpStatusCode.OK)]
+        [GetRequestsErrorInterceptorActionFilter]
+        public IActionResult GetCustomerAvatar(int id)
+        {
+            var customer = _workContext.CurrentCustomer;
+            customer.Id = id;
+            //var customer = EngineContext.Current.Resolve<IWorkContext>().CurrentCustomer;
+
+            //var customer
+            try
+            {
+                //var customerAvatar = _pictureService.GetPictureById(_genericAttributeService.GetAttribute<int>(customer, NopCustomerDefaults.AvatarPictureIdAttribute));
+                //var customerAvatarId = 0;
+
+                //var test = _genericAttributeService.GetAttribute<int>(customer, NopCustomerDefaults.AvatarPictureIdAttribute);
+
+                //if (customerAvatar != null)
+                //    customerAvatarId = customerAvatar.Id;
+
+                var model = new CustomerAvatarModel
+                {
+                    AvatarUrl = _pictureService.GetPictureUrl(
+                        _genericAttributeService.GetAttribute<int>(customer, NopCustomerDefaults.AvatarPictureIdAttribute),
+                        targetSize: _mediaSettings.AvatarPictureSize,
+                        showDefaultPicture: false
+                        )
+                };
+
+                return Ok(model);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        [HttpGet]
+        [Route("/api/all_provinces")]
+        [ProducesResponseType(typeof(List<StateProvince>), (int)HttpStatusCode.OK)]
+        [GetRequestsErrorInterceptorActionFilter]
+        public IActionResult GetProvince()
+        {
+            try
+            {
+                var state = _stateProvinceService.GetStateProvincesByCountryId(134);
+
+                //return Ok(state.ToList());
+
+                var provinceRootObject = new ProvinceRootObject
+                {
+                    Provinces = state.Select(
+                        s => new ProvinceDTO
+                        {
+                            Name = s.Name,
+                            Id = s.Id
+
+                        }
+                        ).ToList()
+                };
+
+                var json = JsonFieldsSerializer.Serialize(provinceRootObject, string.Empty);
+
+                return new RawJsonActionResult(json);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
     }
 }

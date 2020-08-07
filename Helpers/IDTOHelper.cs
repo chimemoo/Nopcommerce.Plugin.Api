@@ -1,4 +1,5 @@
 ﻿using Nop.Core.Domain.Catalog;
+using Nop.Core.Domain.Directory;
 using Nop.Core.Domain.Localization;
 using Nop.Core.Domain.Orders;
 using Nop.Core.Domain.Stores;
@@ -19,6 +20,7 @@ namespace Nop.Plugin.Api.Helpers
 {
     public interface IDTOHelper
     {
+        ProvinceDTO PrepareProvinceDTO(StateProvince province);
         ProductDto PrepareProductDTO(Product product);
         CategoryDto PrepareCategoryDTO(Category category);
         TopicDto PrepareTopicToDTO(Topic topic);

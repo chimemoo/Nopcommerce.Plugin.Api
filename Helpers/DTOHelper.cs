@@ -447,5 +447,12 @@ namespace Nop.Plugin.Api.Helpers
 
             return topicDto;
         }
+
+        public ProvinceDTO PrepareProvinceDTO(StateProvince province)
+        {
+            var provinceDto = province.ToDTO();
+
+            return provinceDto;
+        }
     }
 }
