@@ -100,9 +100,9 @@ namespace Nop.Plugin.Api.Controllers
         /// <response code="401">Unauthorized</response>
         [HttpGet]
         [Route("/api/orders")]
-        [ProducesResponseType(typeof(OrdersRootObject), (int) HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ErrorsRootObject), (int) HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(string), (int) HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(OrdersRootObject), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ErrorsRootObject), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
         [GetRequestsErrorInterceptorActionFilter]
         public IActionResult GetOrders(OrdersParametersModel parameters)
         {
@@ -127,9 +127,9 @@ namespace Nop.Plugin.Api.Controllers
             IList<OrderDto> ordersAsDtos = orders.Select(x => _dtoHelper.PrepareOrderDTO(x)).ToList();
 
             var ordersRootObject = new OrdersRootObject
-                                   {
-                                       Orders = ordersAsDtos
-                                   };
+            {
+                Orders = ordersAsDtos
+            };
 
             var json = JsonFieldsSerializer.Serialize(ordersRootObject, parameters.Fields);
 
@@ -143,9 +143,9 @@ namespace Nop.Plugin.Api.Controllers
         /// <response code="401">Unauthorized</response>
         [HttpGet]
         [Route("/api/orders/count")]
-        [ProducesResponseType(typeof(OrdersCountRootObject), (int) HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(string), (int) HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(ErrorsRootObject), (int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(OrdersCountRootObject), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(ErrorsRootObject), (int)HttpStatusCode.BadRequest)]
         [GetRequestsErrorInterceptorActionFilter]
         public IActionResult GetOrdersCount(OrdersCountParametersModel parameters)
         {
@@ -155,9 +155,9 @@ namespace Nop.Plugin.Api.Controllers
                                                               parameters.PaymentStatus, parameters.ShippingStatus, parameters.CustomerId, storeId);
 
             var ordersCountRootObject = new OrdersCountRootObject
-                                        {
-                                            Count = ordersCount
-                                        };
+            {
+                Count = ordersCount
+            };
 
             return Ok(ordersCountRootObject);
         }
@@ -173,10 +173,10 @@ namespace Nop.Plugin.Api.Controllers
         /// <response code="401">Unauthorized</response>
         [HttpGet]
         [Route("/api/orders/{id}")]
-        [ProducesResponseType(typeof(OrdersRootObject), (int) HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(string), (int) HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(ErrorsRootObject), (int) HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(string), (int) HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(OrdersRootObject), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(ErrorsRootObject), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [GetRequestsErrorInterceptorActionFilter]
         public IActionResult GetOrderById(int id, string fields = "")
         {
@@ -210,27 +210,27 @@ namespace Nop.Plugin.Api.Controllers
         /// <response code="401">Unauthorized</response>
         [HttpGet]
         [Route("/api/orders/customer/{customer_id}")]
-        [ProducesResponseType(typeof(OrdersRootObject), (int) HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(string), (int) HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(OrdersRootObject), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
         [GetRequestsErrorInterceptorActionFilter]
         public IActionResult GetOrdersByCustomerId(int customerId)
         {
             IList<OrderDto> ordersForCustomer = _orderApiService.GetOrdersByCustomerId(customerId).Select(x => _dtoHelper.PrepareOrderDTO(x)).ToList();
 
             var ordersRootObject = new OrdersRootObject
-                                   {
-                                       Orders = ordersForCustomer
-                                   };
+            {
+                Orders = ordersForCustomer
+            };
 
             return Ok(ordersRootObject);
         }
 
         [HttpPost]
         [Route("/api/orders")]
-        [ProducesResponseType(typeof(OrdersRootObject), (int) HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(string), (int) HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(ErrorsRootObject), (int) HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(string), (int) HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(OrdersRootObject), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(ErrorsRootObject), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ErrorsRootObject), 422)]
         public IActionResult CreateOrder(
             [ModelBinder(typeof(JsonModelBinder<OrderDto>))]
@@ -301,6 +301,11 @@ namespace Nop.Plugin.Api.Controllers
                 newOrder.StoreId = _storeContext.CurrentStore.Id;
             }
 
+            if (newOrder.OrderGuid == Guid.Empty)
+            {
+                newOrder.OrderGuid = Guid.NewGuid();
+            }
+
             var placeOrderResult = PlaceOrder(newOrder, customer);
 
             if (!placeOrderResult.Success)
@@ -329,10 +334,10 @@ namespace Nop.Plugin.Api.Controllers
 
         [HttpDelete]
         [Route("/api/orders/{id}")]
-        [ProducesResponseType(typeof(void), (int) HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(string), (int) HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(ErrorsRootObject), (int) HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(string), (int) HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(ErrorsRootObject), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ErrorsRootObject), 422)]
         [GetRequestsErrorInterceptorActionFilter]
         public IActionResult DeleteOrder(int id)
@@ -359,10 +364,10 @@ namespace Nop.Plugin.Api.Controllers
 
         [HttpPut]
         [Route("/api/orders/{id}")]
-        [ProducesResponseType(typeof(OrdersRootObject), (int) HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(string), (int) HttpStatusCode.Unauthorized)]
-        [ProducesResponseType(typeof(ErrorsRootObject), (int) HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(string), (int) HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(OrdersRootObject), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(ErrorsRootObject), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(ErrorsRootObject), 422)]
         public IActionResult UpdateOrder(
             [ModelBinder(typeof(JsonModelBinder<OrderDto>))]
@@ -487,16 +492,16 @@ namespace Nop.Plugin.Api.Controllers
             foreach (var orderItem in orderItems)
             {
                 shoppingCartItems.Add(new ShoppingCartItem
-                                      {
-                                          ProductId = orderItem.ProductId,
-                                          CustomerId = customerId,
-                                          Quantity = orderItem.Quantity,
-                                          RentalStartDateUtc = orderItem.RentalStartDateUtc,
-                                          RentalEndDateUtc = orderItem.RentalEndDateUtc,
-                                          StoreId = storeId,
-                                          Product = orderItem.Product,
-                                          ShoppingCartType = ShoppingCartType.ShoppingCart
-                                      });
+                {
+                    ProductId = orderItem.ProductId,
+                    CustomerId = customerId,
+                    Quantity = orderItem.Quantity,
+                    RentalStartDateUtc = orderItem.RentalStartDateUtc,
+                    RentalEndDateUtc = orderItem.RentalEndDateUtc,
+                    StoreId = storeId,
+                    Product = orderItem.Product,
+                    ShoppingCartType = ShoppingCartType.ShoppingCart
+                });
             }
 
             return shoppingCartItems;
@@ -511,16 +516,16 @@ namespace Nop.Plugin.Api.Controllers
                 if (orderItem.ProductId != null)
                 {
                     shoppingCartItems.Add(new ShoppingCartItem
-                                          {
-                                              ProductId = orderItem.ProductId.Value, // required field
-                                              CustomerId = customerId,
-                                              Quantity = orderItem.Quantity ?? 1,
-                                              RentalStartDateUtc = orderItem.RentalStartDateUtc,
-                                              RentalEndDateUtc = orderItem.RentalEndDateUtc,
-                                              StoreId = storeId,
-                                              Product = _productService.GetProductById(orderItem.ProductId.Value),
-                                              ShoppingCartType = ShoppingCartType.ShoppingCart
-                                          });
+                    {
+                        ProductId = orderItem.ProductId.Value, // required field
+                        CustomerId = customerId,
+                        Quantity = orderItem.Quantity ?? 1,
+                        RentalStartDateUtc = orderItem.RentalStartDateUtc,
+                        RentalEndDateUtc = orderItem.RentalEndDateUtc,
+                        StoreId = storeId,
+                        Product = _productService.GetProductById(orderItem.ProductId.Value),
+                        ShoppingCartType = ShoppingCartType.ShoppingCart
+                    });
                 }
             }
 
@@ -530,11 +535,12 @@ namespace Nop.Plugin.Api.Controllers
         private PlaceOrderResult PlaceOrder(Order newOrder, Customer customer)
         {
             var processPaymentRequest = new ProcessPaymentRequest
-                                        {
-                                            StoreId = newOrder.StoreId,
-                                            CustomerId = customer.Id,
-                                            PaymentMethodSystemName = newOrder.PaymentMethodSystemName
-                                        };
+            {
+                StoreId = newOrder.StoreId,
+                CustomerId = customer.Id,
+                PaymentMethodSystemName = newOrder.PaymentMethodSystemName,
+                OrderGuid = newOrder.OrderGuid
+            };
 
 
             var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest);
